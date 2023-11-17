@@ -22,8 +22,8 @@
     "react-native-svg": "^14.0.0",
     "typescript": "^5.2.2"
   },
-  "main": "./node_modules/expo/AppEntry.js",
-  "_main": "./dist/index.js",
+  "_main": "./node_modules/expo/AppEntry.js",
+  "main": "./dist/index.js",
   "typings": "./dist/index.d.ts",
   "files": [
     "dist"
