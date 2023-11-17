@@ -13,8 +13,10 @@
     "target": "es5",
     "module": "esnext",
     "moduleResolution": "node",
+
     "rootDir": "./src",
     "outDir": "./dist",
+    "skipLibCheck": true,
     "declaration": true,
     "declarationMap": true,
     "inlineSourceMap": true,

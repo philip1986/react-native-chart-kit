@@ -125,8 +125,8 @@ class PieChart extends AbstractChart<PieChartProps, PieChartState> {
           <Rect
             width="100%"
             height={this.props.height}
-            rx={borderRadius}
-            ry={borderRadius}
+            rx={borderRadius as number}
+            ry={borderRadius as number}
             fill={backgroundColor}
           />
           <G

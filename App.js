@@ -1,9 +1,8 @@
 import "babel-polyfill";
 
 import React from "react";
-import { Dimensions, ScrollView, StatusBar, Text } from "react-native";
+import { Dimensions, ScrollView, StatusBar, Text, View } from "react-native";
 import FlashMessage, { showMessage } from "react-native-flash-message";
-import ScrollableTabView from "react-native-scrollable-tab-view";
 
 import {
   contributionData,
@@ -112,7 +111,7 @@ export default class App extends React.Component {
     const { width } = Dimensions.get("window");
     const height = 256;
     return (
-      <ScrollableTabView renderTabBar={this.renderTabBar}>
+      <View>
         {chartConfigs.map(chartConfig => {
           const labelStyle = {
             color: chartConfig.color(),
@@ -325,7 +324,7 @@ export default class App extends React.Component {
             </ScrollView>
           );
         })}
-      </ScrollableTabView>
+      </View>
     );
   }
 }

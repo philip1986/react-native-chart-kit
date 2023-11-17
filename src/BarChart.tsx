@@ -271,8 +271,8 @@ class BarChart extends AbstractChart<BarChartProps, BarChartState> {
           <Rect
             width="100%"
             height={height}
-            rx={borderRadius}
-            ry={borderRadius}
+            rx={borderRadius as number}
+            ry={borderRadius as number}
             fill="url(#backgroundGradient)"
           />
           <G>
