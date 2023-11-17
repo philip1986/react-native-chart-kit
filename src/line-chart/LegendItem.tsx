@@ -5,6 +5,25 @@ import { G, Line, Rect, Text, TextProps } from "react-native-svg";
 const CIRCLE_WIDTH = 16;
 const PADDING_LEFT = 4;
 const CHARACTER_WIDTH = 6;
+const NARROW_CHARACTER_WIDTH = 4;
+const NARROW_CHARACTERS = new Set([
+  "1",
+  "j",
+  "i",
+  "I",
+  "l",
+  "!",
+  ":",
+  ".",
+  ",",
+  " ",
+  "(",
+  ")",
+  "[",
+  "]",
+  "{",
+  "}",
+]);
 
 export type LegendItemProps = {
   baseLegendItemX: number;
@@ -66,9 +85,21 @@ export const LegendItem = (props: LegendItemProps) => {
           <Line
             x1={x1Text}
             y1={props.legendOffset * 0.55}
-            x2={x1Text + props.legendText.length * CHARACTER_WIDTH * 1.1}
+            x2={
+              x1Text +
+              props.legendText
+                .split("")
+                .reduce(
+                  (acc, char) =>
+                    (acc += NARROW_CHARACTERS.has(char)
+                      ? NARROW_CHARACTER_WIDTH
+                      : CHARACTER_WIDTH),
+                  0
+                ) *
+                1.1
+            }
             y2={props.legendOffset * 0.55}
-            stroke="black"
+            stroke="grey"
             strokeWidth="2"
           />
         )}
