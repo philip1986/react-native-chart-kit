@@ -1,6 +1,6 @@
 import React from "react";
-import { ColorValue } from "react-native";
-import { Rect, Text, TextProps } from "react-native-svg";
+import { ColorValue, View } from "react-native";
+import { G, Line, Rect, Text, TextProps } from "react-native-svg";
 
 const CIRCLE_WIDTH = 16;
 const PADDING_LEFT = 4;
@@ -13,9 +13,14 @@ export type LegendItemProps = {
   legendText: string;
   iconColor: ColorValue;
   labelProps: TextProps;
+  enabled: boolean;
+  allowDisabledLegendItems: boolean;
+  onToggel: (isEnabled: boolean) => void;
 };
 
 export const LegendItem = (props: LegendItemProps) => {
+  const [isEnabled, setIsEnabled] = React.useState(props.enabled);
+
   const { baseLegendItemX, index } = props;
   /* half the height of the legend Rect, minus half the height of the circle to align the
      circle from its center, rather than its top. */
@@ -26,8 +31,24 @@ export const LegendItem = (props: LegendItemProps) => {
   const textLengthOffset = (props.legendText.length * CHARACTER_WIDTH) / 2;
   const legendItemNumber = index + 1;
 
+  const x1Text =
+    baseLegendItemX * legendItemNumber + (PADDING_LEFT - textLengthOffset);
+  const y1Text = centerAlignedText;
+
   return (
-    <>
+    <G
+      opacity={isEnabled ? 1 : 0.3}
+      onPress={() => {
+        if (!props.allowDisabledLegendItems && isEnabled) {
+          return;
+        }
+        setIsEnabled((p) => {
+          const newState = !p;
+          props.onToggel(newState);
+          return newState;
+        });
+      }}
+    >
       <Rect
         width={CIRCLE_WIDTH}
         height={CIRCLE_WIDTH}
@@ -39,15 +60,19 @@ export const LegendItem = (props: LegendItemProps) => {
         }
         y={centerAlignedCircle}
       />
-      <Text
-        x={
-          baseLegendItemX * legendItemNumber + (PADDING_LEFT - textLengthOffset)
-        }
-        y={centerAlignedText}
-        {...props.labelProps}
-      >
+      <Text x={x1Text} y={y1Text} {...props.labelProps}>
         {props.legendText}
+        {!isEnabled && (
+          <Line
+            x1={x1Text}
+            y1={props.legendOffset * 0.55}
+            x2={x1Text + props.legendText.length * CHARACTER_WIDTH * 1.1}
+            y2={props.legendOffset * 0.55}
+            stroke="black"
+            strokeWidth="2"
+          />
+        )}
       </Text>
-    </>
+    </G>
   );
 };
