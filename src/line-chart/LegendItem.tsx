@@ -82,6 +82,7 @@ export const LegendItem = (props: LegendItemProps) => {
       <Rect
         width={baseLegendItemX}
         height={CIRCLE_WIDTH * 2}
+        opacity={0}
         x={
           baseLegendItemX * legendItemNumber - (CIRCLE_WIDTH + textLengthOffset)
         }
