@@ -40,12 +40,12 @@ export type LegendItemProps = {
 export const LegendItem = (props: LegendItemProps) => {
   const [isEnabled, setIsEnabled] = React.useState(props.enabled);
 
-  const { baseLegendItemX, index } = props;
+  const { baseLegendItemX, index, legendOffset } = props;
   /* half the height of the legend Rect, minus half the height of the circle to align the
      circle from its center, rather than its top. */
-  const centerAlignedCircle = props.legendOffset / 2 - CIRCLE_WIDTH / 2;
+  const centerAlignedCircle = legendOffset / 2 - CIRCLE_WIDTH / 2;
   // 65% of the legend container height centers the text in relation to the circles
-  const centerAlignedText = props.legendOffset * 0.65;
+  const centerAlignedText = legendOffset * 0.65;
   // to center the legendItem on the baseLegendItemX
   const textLengthOffset = (props.legendText.length * CHARACTER_WIDTH) / 2;
   const legendItemNumber = index + 1;
@@ -53,6 +53,17 @@ export const LegendItem = (props: LegendItemProps) => {
   const x1Text =
     baseLegendItemX * legendItemNumber + (PADDING_LEFT - textLengthOffset);
   const y1Text = centerAlignedText;
+
+  const textWidth =
+    props.legendText
+      .split("")
+      .reduce(
+        (acc, char) =>
+          (acc += NARROW_CHARACTERS.has(char)
+            ? NARROW_CHARACTER_WIDTH
+            : CHARACTER_WIDTH),
+        0
+      ) * 1.1;
 
   return (
     <G
@@ -69,6 +80,14 @@ export const LegendItem = (props: LegendItemProps) => {
       }}
     >
       <Rect
+        width={baseLegendItemX}
+        height={CIRCLE_WIDTH * 2}
+        x={
+          baseLegendItemX * legendItemNumber - (CIRCLE_WIDTH + textLengthOffset)
+        }
+        y={centerAlignedCircle / 2}
+      />
+      <Rect
         width={CIRCLE_WIDTH}
         height={CIRCLE_WIDTH}
         fill={props.iconColor}
@@ -84,21 +103,9 @@ export const LegendItem = (props: LegendItemProps) => {
         {!isEnabled && (
           <Line
             x1={x1Text}
-            y1={props.legendOffset * 0.55}
-            x2={
-              x1Text +
-              props.legendText
-                .split("")
-                .reduce(
-                  (acc, char) =>
-                    (acc += NARROW_CHARACTERS.has(char)
-                      ? NARROW_CHARACTER_WIDTH
-                      : CHARACTER_WIDTH),
-                  0
-                ) *
-                1.1
-            }
-            y2={props.legendOffset * 0.55}
+            y1={legendOffset * 0.55}
+            x2={x1Text + textWidth}
+            y2={legendOffset * 0.55}
             stroke="grey"
             strokeWidth="2"
           />
