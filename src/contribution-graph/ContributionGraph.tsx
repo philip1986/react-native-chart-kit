@@ -1,6 +1,6 @@
 import _ from "lodash";
 import React from "react";
-import { ScrollView } from "react-native";
+import { ScrollView, View } from "react-native";
 import { G, Rect, RectProps, Svg, Text } from "react-native-svg";
 
 import { ContributionGraphProps, ContributionGraphState } from ".";
@@ -109,13 +109,16 @@ class ContributionGraph extends AbstractChart<
     return DAYS_IN_WEEK * this.getSquareSizeWithGutter();
   }
 
-  getWidth() {
-    return Math.max(
+  getChartWidth() {
+    return (
       this.getWeekCount() * this.getSquareSizeWithGutter() +
-        paddingLeft * 2 +
-        (this.getWeekCount() / 4) * this.getMonthBreakOffset(),
-      this.props.width
+      paddingLeft * 2 +
+      (this.getWeekCount() / 4) * this.getMonthBreakOffset()
     );
+  }
+
+  getWidth() {
+    return Math.max(this.getChartWidth(), this.props.width);
   }
 
   getMonthBreakOffset() {
@@ -355,9 +358,9 @@ class ContributionGraph extends AbstractChart<
     );
   }
 
-  renderAllWeeks() {
+  renderAllWeeks(offset: number = 0) {
     const monthBreakOffset = this.getMonthBreakOffset();
-    let offset = 0;
+    let _offset = offset;
     return _.range(this.getWeekCount()).map((weekIndex) => {
       const d = addWeeks(this.getStartDate(), weekIndex);
       const startOfWeek = getStartOfWeek(d);
@@ -376,7 +379,7 @@ class ContributionGraph extends AbstractChart<
     });
   }
 
-  renderMonthLabels() {
+  renderMonthLabels(offset: number = 0) {
     if (!this.props.showMonthLabels) {
       return null;
     }
@@ -391,10 +394,17 @@ class ContributionGraph extends AbstractChart<
 
       const endOfWeek = getEndOfWeek(d);
 
-      const [x, y] = this.getMonthLabelCoordinates(weekIndex + 1);
+      const [x, y] = this.getMonthLabelCoordinates(
+        weekIndex + (weekIndex > 0 ? 3 : 1)
+      );
 
       return (
-        <Text key={weekIndex} x={x} y={y + 8} {...this.getPropsForLabels()}>
+        <Text
+          key={weekIndex}
+          x={x + offset}
+          y={y + 8}
+          {...this.getPropsForLabels()}
+        >
           {this.props.getMonthLabel
             ? this.props.getMonthLabel(endOfWeek.getMonth())
             : MONTH_LABELS[endOfWeek.getMonth()]}
@@ -403,7 +413,7 @@ class ContributionGraph extends AbstractChart<
     });
   }
 
-  renderDayLabels() {
+  renderDayLabels(offset: number = 0) {
     if (!this.props.showDayLabels) {
       return null;
     }
@@ -414,7 +424,12 @@ class ContributionGraph extends AbstractChart<
       const [x, y] = this.getDayLabelCoordinates(dayIndex);
 
       return (
-        <Text key={dayIndex} x={x} y={y + 8} {...this.getPropsForLabels()}>
+        <Text
+          key={dayIndex}
+          x={x + offset}
+          y={y + 4 + dayIndex * this.props.gutterSize}
+          {...this.getPropsForLabels()}
+        >
           {this.props.getDayLabel
             ? this.props.getDayLabel(dayIndex)
             : DAY_LABELS[dayIndex]}
@@ -446,40 +461,49 @@ class ContributionGraph extends AbstractChart<
       borderRadius = stupidXo;
     }
 
-    // const width =
-    //   (this.getWeekCount() + 1) * this.getSquareSizeWithGutter() +
-    //   paddingLeft * 2;
-
     const width = this.getWidth();
 
-    console.log("width", width);
+    const offset =
+      this.getChartWidth() < this.getWidth()
+        ? (this.getWidth() - this.getChartWidth()) / 2
+        : 0;
+
+    const svg = (
+      <Svg height={this.props.height} width={width}>
+        {this.renderDefs({
+          width: this.props.width,
+          height: this.props.height,
+          ...this.props.chartConfig,
+        })}
+        <Rect
+          width="100%"
+          height={this.props.height}
+          rx={borderRadius as number}
+          ry={borderRadius as number}
+          fill="url(#backgroundGradient)"
+        />
+        <G>{this.renderDayLabels(offset)}</G>
+        <G>{this.renderMonthLabels(offset)}</G>
+        <G>{this.renderAllWeeks(offset)}</G>
+      </Svg>
+    );
 
     return (
-      <ScrollView
-        horizontal
-        style={style}
-        onScroll={(e) => {
-          console.log(e.nativeEvent.contentOffset.x);
-        }}
+      <View
+        style={[
+          {
+            justifyContent: "center",
+            alignItems: "center",
+          },
+          style,
+        ]}
       >
-        <Svg height={this.props.height} width={width}>
-          {this.renderDefs({
-            width: this.props.width,
-            height: this.props.height,
-            ...this.props.chartConfig,
-          })}
-          <Rect
-            width="100%"
-            height={this.props.height}
-            rx={borderRadius as number}
-            ry={borderRadius as number}
-            fill="url(#backgroundGradient)"
-          />
-          <G>{this.renderDayLabels()}</G>
-          <G>{this.renderMonthLabels()}</G>
-          <G>{this.renderAllWeeks()}</G>
-        </Svg>
-      </ScrollView>
+        {this.getWidth() > this.props.width ? (
+          <ScrollView horizontal>{svg}</ScrollView>
+        ) : (
+          svg
+        )}
+      </View>
     );
   }
 }
