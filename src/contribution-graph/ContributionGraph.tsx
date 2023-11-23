@@ -264,7 +264,9 @@ class ContributionGraph extends AbstractChart<
   getMonthLabelCoordinates(weekIndex: number) {
     if (this.props.horizontal) {
       return [
-        weekIndex * (this.getSquareSizeWithGutter() + 1) + paddingLeft,
+        weekIndex * (this.getSquareSizeWithGutter() + 1) +
+          paddingLeft -
+          this.props.horizontalOffset,
         this.getMonthLabelSize() - MONTH_LABEL_GUTTER_SIZE,
       ];
     }
@@ -389,6 +391,7 @@ class ContributionGraph extends AbstractChart<
     let curMonth: number;
     return weekRange.map((weekIndex) => {
       const d = addWeeks(this.getStartDate(), weekIndex);
+
       if (curMonth === d.getMonth()) return null;
       curMonth = d.getMonth();
 
@@ -406,8 +409,8 @@ class ContributionGraph extends AbstractChart<
           {...this.getPropsForLabels()}
         >
           {this.props.getMonthLabel
-            ? this.props.getMonthLabel(endOfWeek.getMonth())
-            : MONTH_LABELS[endOfWeek.getMonth()]}
+            ? this.props.getMonthLabel(curMonth)
+            : MONTH_LABELS[curMonth]}
         </Text>
       );
     });
