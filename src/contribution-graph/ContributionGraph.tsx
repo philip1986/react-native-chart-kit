@@ -395,11 +395,11 @@ class ContributionGraph extends AbstractChart<
       if (curMonth === d.getMonth()) return null;
       curMonth = d.getMonth();
 
+      console.log(getWeekOfMonth(d));
+
       let week0Offset = 0;
       if (weekIndex === 0) {
-        console.log(getWeekOfMonth(d));
-
-        week0Offset = 5 - getWeekOfMonth(d) + 1;
+        week0Offset = Math.max(5 - getWeekOfMonth(d), 1);
       }
 
       const [x, y] = this.getMonthLabelCoordinates(
@@ -476,7 +476,7 @@ class ContributionGraph extends AbstractChart<
         ? (this.getWidth() - this.getChartWidth()) / 2
         : 0;
 
-    const svg = (
+    const svg = (renderDaylabels: boolean = true) => (
       <Svg height={this.props.height} width={width}>
         {this.renderDefs({
           width: this.props.width,
@@ -490,7 +490,7 @@ class ContributionGraph extends AbstractChart<
           ry={borderRadius as number}
           fill="url(#backgroundGradient)"
         />
-        <G>{this.renderDayLabels(offset)}</G>
+        {renderDaylabels && <G>{this.renderDayLabels(offset)}</G>}
         <G>{this.renderMonthLabels(offset)}</G>
         <G>{this.renderAllWeeks(offset)}</G>
       </Svg>
@@ -505,14 +505,32 @@ class ContributionGraph extends AbstractChart<
             width: this.props.width,
             borderRadius: borderRadius,
             overflow: "hidden",
+            flexDirection: "row",
           },
           style,
         ]}
       >
+        <View style={{ marginRight: -40, zIndex: 100 }}>
+          <Svg height={this.props.height} width={40}>
+            {this.renderDefs({
+              width: this.props.width,
+              height: this.props.height,
+              ...this.props.chartConfig,
+            })}
+            <Rect
+              width="100%"
+              height={this.props.height}
+              rx={borderRadius as number}
+              ry={borderRadius as number}
+              fill="url(#backgroundGradient)"
+            />
+            <G>{this.renderDayLabels(offset)}</G>
+          </Svg>
+        </View>
         {this.getWidth() > this.props.width ? (
-          <ScrollView horizontal>{svg}</ScrollView>
+          <ScrollView horizontal>{svg(false)}</ScrollView>
         ) : (
-          svg
+          svg()
         )}
       </View>
     );
