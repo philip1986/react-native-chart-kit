@@ -367,16 +367,16 @@ class ContributionGraph extends AbstractChart<
       const d = addWeeks(this.getStartDate(), weekIndex);
       const startOfWeek = getStartOfWeek(d);
 
-      offset =
+      _offset =
         addDays(startOfWeek, -1).getMonth() !== startOfWeek.getMonth()
-          ? offset + monthBreakOffset
-          : offset;
+          ? _offset + monthBreakOffset
+          : _offset;
 
-      const renderedWeeks = this.renderWeek(weekIndex, offset, startOfWeek);
-      offset =
+      const renderedWeeks = this.renderWeek(weekIndex, _offset, startOfWeek);
+      _offset =
         startOfWeek.getMonth() !== getEndOfWeek(d).getMonth()
-          ? offset + monthBreakOffset
-          : offset;
+          ? _offset + monthBreakOffset
+          : _offset;
       return renderedWeeks;
     });
   }
@@ -395,10 +395,15 @@ class ContributionGraph extends AbstractChart<
       if (curMonth === d.getMonth()) return null;
       curMonth = d.getMonth();
 
-      const endOfWeek = getEndOfWeek(d);
+      let week0Offset = 0;
+      if (weekIndex === 0) {
+        console.log(getWeekOfMonth(d));
+
+        week0Offset = 5 - getWeekOfMonth(d) + 1;
+      }
 
       const [x, y] = this.getMonthLabelCoordinates(
-        weekIndex + (weekIndex > 0 ? 3 : 1)
+        weekIndex + (weekIndex > 0 ? 3 : week0Offset)
       );
 
       return (
@@ -497,6 +502,9 @@ class ContributionGraph extends AbstractChart<
           {
             justifyContent: "center",
             alignItems: "center",
+            width: this.props.width,
+            borderRadius: borderRadius,
+            overflow: "hidden",
           },
           style,
         ]}
@@ -531,4 +539,11 @@ function addWeeks(date: Date, weeks: number) {
   const result = new Date(date);
   result.setDate(result.getDate() + weeks * 7);
   return result;
+}
+
+function getWeekOfMonth(date: Date) {
+  const firstDayOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
+  const firstDayOfWeek = firstDayOfMonth.getDay() || 7;
+  const offsetDate = date.getDate() + firstDayOfWeek - 1;
+  return Math.ceil(offsetDate / 7);
 }
