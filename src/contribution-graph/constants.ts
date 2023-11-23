@@ -14,5 +14,15 @@ export const MONTH_LABELS = {
   8: "Sep",
   9: "Oct",
   10: "Nov",
-  11: "Dec"
+  11: "Dec",
+};
+
+export const DAY_LABELS = {
+  0: "Mon",
+  1: "Tue",
+  2: "Wed",
+  3: "Thu",
+  4: "Fri",
+  5: "Sat",
+  6: "Sun",
 };
