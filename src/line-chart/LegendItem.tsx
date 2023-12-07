@@ -39,20 +39,14 @@ export type LegendItemProps = {
 
 export const LegendItem = (props: LegendItemProps) => {
   const [isEnabled, setIsEnabled] = React.useState(props.enabled);
+  const fontSize = Number(props.labelProps.fontSize);
 
-  const { baseLegendItemX, index, legendOffset } = props;
-  /* half the height of the legend Rect, minus half the height of the circle to align the
-     circle from its center, rather than its top. */
-  const centerAlignedCircle = legendOffset / 2 - CIRCLE_WIDTH / 2;
-  // 65% of the legend container height centers the text in relation to the circles
-  const centerAlignedText = legendOffset * 0.65;
-  // to center the legendItem on the baseLegendItemX
-  const textLengthOffset = (props.legendText.length * CHARACTER_WIDTH) / 2;
-  const legendItemNumber = index + 1;
+  const { baseLegendItemX, index } = props;
 
-  const x1Text =
-    baseLegendItemX * legendItemNumber + (PADDING_LEFT - textLengthOffset);
-  const y1Text = centerAlignedText;
+  const legendItemNumber = index + 0;
+
+  const x1Text = baseLegendItemX + PADDING_LEFT;
+  const y1Text = 20 + (fontSize + 5) * legendItemNumber;
 
   const textWidth =
     props.legendText
@@ -63,7 +57,8 @@ export const LegendItem = (props: LegendItemProps) => {
             ? NARROW_CHARACTER_WIDTH
             : CHARACTER_WIDTH),
         0
-      ) * 1.1;
+      ) *
+    (fontSize / 12 + 0.05);
 
   return (
     <G
@@ -80,13 +75,11 @@ export const LegendItem = (props: LegendItemProps) => {
       }}
     >
       <Rect
-        width={baseLegendItemX}
-        height={CIRCLE_WIDTH * 2}
+        width={props.legendText.length * CHARACTER_WIDTH * 2}
+        height={CIRCLE_WIDTH * 1.5}
         opacity={0}
-        x={
-          baseLegendItemX * legendItemNumber - (CIRCLE_WIDTH + textLengthOffset)
-        }
-        y={centerAlignedCircle / 2}
+        x={baseLegendItemX - CIRCLE_WIDTH}
+        y={y1Text - fontSize + 2}
       />
       <Rect
         width={CIRCLE_WIDTH}
@@ -94,19 +87,17 @@ export const LegendItem = (props: LegendItemProps) => {
         fill={props.iconColor}
         rx={8}
         ry={8}
-        x={
-          baseLegendItemX * legendItemNumber - (CIRCLE_WIDTH + textLengthOffset)
-        }
-        y={centerAlignedCircle}
+        x={baseLegendItemX - CIRCLE_WIDTH}
+        y={y1Text - fontSize + 2}
       />
       <Text x={x1Text} y={y1Text} {...props.labelProps}>
         {props.legendText}
         {!isEnabled && (
           <Line
             x1={x1Text}
-            y1={legendOffset * 0.55}
+            y1={y1Text - Math.floor(fontSize / 4)}
             x2={x1Text + textWidth}
-            y2={legendOffset * 0.55}
+            y2={y1Text - Math.floor(fontSize / 4)}
             stroke="grey"
             strokeWidth="2"
           />
