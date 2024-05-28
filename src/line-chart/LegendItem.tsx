@@ -1,5 +1,5 @@
 import React from "react";
-import { ColorValue, View } from "react-native";
+import { ColorValue } from "react-native";
 import { G, Line, Rect, Text, TextProps } from "react-native-svg";
 
 const CIRCLE_WIDTH = 16;
@@ -92,16 +92,6 @@ export const LegendItem = (props: LegendItemProps) => {
       />
       <Text x={x1Text} y={y1Text} {...props.labelProps}>
         {props.legendText}
-        {!isEnabled && (
-          <Line
-            x1={x1Text}
-            y1={y1Text - Math.floor(fontSize / 4)}
-            x2={x1Text + textWidth}
-            y2={y1Text - Math.floor(fontSize / 4)}
-            stroke="grey"
-            strokeWidth="2"
-          />
-        )}
       </Text>
     </G>
   );

@@ -395,8 +395,6 @@ class ContributionGraph extends AbstractChart<
       if (curMonth === d.getMonth()) return null;
       curMonth = d.getMonth();
 
-      console.log(getWeekOfMonth(d));
-
       let week0Offset = 0;
       if (weekIndex === 0) {
         week0Offset = Math.max(5 - getWeekOfMonth(d), 1);
