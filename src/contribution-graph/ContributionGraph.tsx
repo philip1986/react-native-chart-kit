@@ -1,5 +1,5 @@
 import _ from "lodash";
-import React from "react";
+import React, { ReactNode, useEffect, useRef } from "react";
 import { ScrollView, View } from "react-native";
 import { G, Rect, RectProps, Svg, Text } from "react-native-svg";
 
@@ -526,13 +526,28 @@ class ContributionGraph extends AbstractChart<
           </Svg>
         </View>
         {this.getWidth() > this.props.width ? (
-          <ScrollView horizontal>{svg(false)}</ScrollView>
+          <_ScrollView>{svg(false)}</_ScrollView>
         ) : (
           svg()
         )}
       </View>
     );
   }
+}
+
+function _ScrollView({ children }: { children: ReactNode }) {
+  const ref = useRef<ScrollView>(null);
+
+  return (
+    <ScrollView
+      onLayout={() => ref.current?.scrollToEnd({ animated: true })}
+      ref={ref}
+      showsHorizontalScrollIndicator={false}
+      horizontal
+    >
+      {children}
+    </ScrollView>
+  );
 }
 
 export default ContributionGraph;
