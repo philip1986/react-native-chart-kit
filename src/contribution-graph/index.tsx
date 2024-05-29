@@ -9,6 +9,7 @@ import ContributionGraph, {
 export interface ContributionGraphProps extends AbstractChartProps {
   values: Array<any>;
   endDate: Date;
+  center?: boolean;
   numDays: number;
   width: number;
   height: number;

@@ -470,7 +470,7 @@ class ContributionGraph extends AbstractChart<
     const width = this.getWidth();
 
     const offset =
-      this.getChartWidth() < this.getWidth()
+      this.props.center && this.getChartWidth() < this.getWidth()
         ? (this.getWidth() - this.getChartWidth()) / 2
         : 0;
 
