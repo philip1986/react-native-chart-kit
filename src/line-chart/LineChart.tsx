@@ -1,6 +1,7 @@
-import React, { ReactNode } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import {
   Animated,
+  Easing,
   ScrollView,
   StyleSheet,
   TextInput,
@@ -216,6 +217,8 @@ export interface LineChartProps extends AbstractChartProps {
    * The number of horizontal lines
    */
   segments?: number;
+
+  animationDuration?: number;
 }
 
 type LineChartState = {
@@ -292,8 +295,6 @@ class LineChart extends AbstractChart<LineChartProps, LineChartState> {
 
     data.forEach((dataset) => {
       if (dataset.withDots == false) return;
-      console.log(getDotColor, this.getColor(dataset, 0.9));
-
       const _getDorColor =
         typeof getDotColor === "function"
           ? getDotColor
@@ -1056,6 +1057,7 @@ class LineChart extends AbstractChart<LineChartProps, LineChartState> {
                 maxDatapoint,
                 xMax,
               }}
+              animationDuration={this.props.animationDuration}
             />
 
             {withShadow && (
@@ -1071,6 +1073,7 @@ class LineChart extends AbstractChart<LineChartProps, LineChartState> {
                   maxDatapoint,
                   xMax,
                 }}
+                animationDuration={this.props.animationDuration}
               />
             )}
 
@@ -1087,6 +1090,7 @@ class LineChart extends AbstractChart<LineChartProps, LineChartState> {
                   maxDatapoint,
                   xMax,
                 }}
+                animationDuration={this.props.animationDuration}
               />
             )}
 
@@ -1137,82 +1141,122 @@ class LineChart extends AbstractChart<LineChartProps, LineChartState> {
 
 export default LineChart;
 
-type LineFnProps = Pick<
-  AbstractChartConfig,
-  "data" | "width" | "height" | "paddingRight" | "paddingTop" | "linejoinType"
-> & {
+type RenderFnBaseProps = Pick<AbstractChartConfig, "data"> & {
   minDatapoint: number;
   maxDatapoint: number;
   xMax: number;
 };
 
+type RenderFnProps = {
+  renderFn: (props: RenderFnBaseProps) => ReactNode;
+  props: RenderFnBaseProps;
+  animationDuration?: number;
+};
+
+function _Render<P extends RenderFnProps>({
+  renderFn,
+  props,
+  animationDuration,
+}: P) {
+  const [_data, setData] = useState(props.data);
+
+  useEffect(() => {
+    if (!animationDuration) {
+      setData(props.data);
+      return;
+    }
+    const animationValue = new Animated.Value(0);
+
+    Animated.timing(animationValue, {
+      toValue: 1,
+      duration: animationDuration,
+      useNativeDriver: false,
+      easing: Easing.ease,
+    }).start();
+
+    const subscription = animationValue.addListener((v) => {
+      setData(
+        props.data.map((dataset) => ({
+          ...dataset,
+          data: dataset.data.map((d) => d * v.value),
+        }))
+      );
+    });
+
+    return () => {
+      animationValue.removeListener(subscription);
+    };
+  }, [props.data]);
+
+  return renderFn({ ...props, data: _data });
+}
+
+type LineFnProps = Pick<
+  AbstractChartConfig,
+  "data" | "width" | "height" | "paddingRight" | "paddingTop" | "linejoinType"
+> &
+  RenderFnBaseProps;
+
 interface _LineProps {
   renderFn: (props: LineFnProps) => ReactNode;
   props: LineFnProps;
+  animationDuration?: number;
 }
 
-function _Line({ renderFn, props }: _LineProps) {
-  const _data = props.data.map(
-    (dataset) => ({
-      ...dataset,
-      // data: dataset.data.map((d, i) => d / 2),
-    }),
-    []
+function _Line({ renderFn, props, animationDuration }: _LineProps) {
+  return (
+    <_Render
+      renderFn={renderFn}
+      props={props}
+      animationDuration={animationDuration}
+    />
   );
-
-  return renderFn({ ...props, data: _data });
 }
 
 type LineShadowFnProps = Pick<
   AbstractChartConfig,
   "data" | "width" | "height" | "paddingRight" | "paddingTop"
-> & {
-  useColorFromDataset: AbstractChartConfig["useShadowColorFromDataset"];
-  minDatapoint: number;
-  maxDatapoint: number;
-  xMax: number;
-};
+> &
+  RenderFnBaseProps & {
+    useColorFromDataset: AbstractChartConfig["useShadowColorFromDataset"];
+  };
 
 interface _LineShadowProps {
   renderFn: (props: LineShadowFnProps) => ReactNode;
   props: LineShadowFnProps;
+  animationDuration?: number;
 }
 
-function _LineShadow({ renderFn, props }: _LineShadowProps) {
-  const _data = props.data.map(
-    (dataset) => ({
-      ...dataset,
-      // data: dataset.data.map((d, i) => d / 2),
-    }),
-    []
+function _LineShadow({ renderFn, props, animationDuration }: _LineShadowProps) {
+  return (
+    <_Render
+      renderFn={renderFn}
+      props={props}
+      animationDuration={animationDuration}
+    />
   );
-
-  return renderFn({ ...props, data: _data });
 }
 
 type DotsFnProps = Pick<
   AbstractChartConfig,
   "data" | "width" | "height" | "paddingRight" | "paddingTop"
-> & {
-  onDataPointClick: LineChartProps["onDataPointClick"];
-  minDatapoint: number;
-  maxDatapoint: number;
-  xMax: number;
-};
+> &
+  RenderFnBaseProps & {
+    onDataPointClick: LineChartProps["onDataPointClick"];
+  };
 
 interface _DotsProps {
   renderFn: (props: DotsFnProps) => ReactNode;
   props: DotsFnProps;
+  animationDuration?: number;
 }
 
-function _Dots({ renderFn, props }: _DotsProps) {
-  const _data = props.data.map(
-    (dataset) => ({
-      ...dataset,
-      // data: dataset.data.map((d, i) => d / 2),
-    }),
-    []
+function _Dots({ renderFn, props, animationDuration }: _DotsProps) {
+  return (
+    <_Render
+      renderFn={renderFn}
+      props={props}
+      animationDuration={animationDuration}
+    />
   );
-
-  return renderFn({ ...props, data: _data });
 }
