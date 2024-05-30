@@ -61,6 +61,21 @@ class AbstractChart<
     }
   };
 
+  calcScalerAlt = (min: number, max: number) => {
+    if (this.props.fromZero && this.props.fromNumber) {
+      return Math.max(max, this.props.fromNumber) - Math.min(min, 0) || 1;
+    } else if (this.props.fromZero) {
+      return Math.max(max, 0) - Math.min(min, 0) || 1;
+    } else if (this.props.fromNumber) {
+      return (
+        Math.max(max, this.props.fromNumber) -
+          Math.min(min, this.props.fromNumber) || 1
+      );
+    } else {
+      return max - min || 1;
+    }
+  };
+
   calcBaseHeight = (data: number[], height: number) => {
     const min = Math.min(...data);
     const max = Math.max(...data);
@@ -73,20 +88,47 @@ class AbstractChart<
     }
   };
 
-  calcHeight = (val: number, data: number[], height: number) => {
-    const max = Math.max(...data);
-    const min = Math.min(...data);
+  calcBaseHeightAlt = (min: number, max: number, height: number) => {
+    if (min >= 0 && max >= 0) {
+      return height;
+    } else if (min < 0 && max <= 0) {
+      return 0;
+    } else if (min < 0 && max > 0) {
+      return (height * max) / this.calcScalerAlt(min, max);
+    }
+  };
 
+  calcHeight = (
+    val: number,
+    data: number[],
+    height: number,
+    min = Math.min(...data),
+    max = Math.max(...data)
+  ) => {
     if (min < 0 && max > 0) {
-      return height * (val / this.calcScaler(data));
+      return height * (val / this.calcScalerAlt(min, max));
     } else if (min >= 0 && max >= 0) {
       return this.props.fromZero
-        ? height * (val / this.calcScaler(data))
-        : height * ((val - min) / this.calcScaler(data));
+        ? height * (val / this.calcScalerAlt(min, max))
+        : height * ((val - min) / this.calcScalerAlt(min, max));
     } else if (min < 0 && max <= 0) {
       return this.props.fromZero
-        ? height * (val / this.calcScaler(data))
-        : height * ((val - max) / this.calcScaler(data));
+        ? height * (val / this.calcScalerAlt(min, max))
+        : height * ((val - max) / this.calcScalerAlt(min, max));
+    }
+  };
+
+  calcHeightAlt = (val: number, height: number, min: number, max: number) => {
+    if (min < 0 && max > 0) {
+      return height * (val / this.calcScalerAlt(min, max));
+    } else if (min >= 0 && max >= 0) {
+      return this.props.fromZero
+        ? height * (val / this.calcScalerAlt(min, max))
+        : height * ((val - min) / this.calcScalerAlt(min, max));
+    } else if (min < 0 && max <= 0) {
+      return this.props.fromZero
+        ? height * (val / this.calcScalerAlt(min, max))
+        : height * ((val - max) / this.calcScalerAlt(min, max));
     }
   };
 
@@ -203,7 +245,12 @@ class AbstractChart<
       yAxisSuffix = "",
       yLabelsOffset = 12,
     } = this.props;
-    return new Array(count === 1 ? 1 : count + 1).fill(1).map((_, i) => {
+
+    const minDatapoint = Math.min(...data);
+    const maxDatapoint = Math.max(...data);
+    const scaler = this.calcScalerAlt(minDatapoint, maxDatapoint);
+
+    return [...new Array(count === 1 ? 1 : count + 1)].map((_, i) => {
       let yLabel = String(i * count);
 
       if (count === 1) {
@@ -212,8 +259,8 @@ class AbstractChart<
         )}${yAxisSuffix}`;
       } else {
         const label = this.props.fromZero
-          ? (this.calcScaler(data) / count) * i + Math.min(...data, 0)
-          : (this.calcScaler(data) / count) * i + Math.min(...data);
+          ? (scaler / count) * i + Math.min(minDatapoint, 0)
+          : (scaler / count) * i + minDatapoint;
         yLabel = `${yAxisLabel}${formatYLabel(
           label.toFixed(decimalPlaces)
         )}${yAxisSuffix}`;
