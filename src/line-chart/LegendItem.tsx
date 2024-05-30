@@ -48,18 +48,6 @@ export const LegendItem = (props: LegendItemProps) => {
   const x1Text = baseLegendItemX + PADDING_LEFT;
   const y1Text = 20 + (fontSize + 5) * legendItemNumber;
 
-  const textWidth =
-    props.legendText
-      .split("")
-      .reduce(
-        (acc, char) =>
-          (acc += NARROW_CHARACTERS.has(char)
-            ? NARROW_CHARACTER_WIDTH
-            : CHARACTER_WIDTH),
-        0
-      ) *
-    (fontSize / 12 + 0.05);
-
   return (
     <G
       opacity={isEnabled ? 1 : 0.3}

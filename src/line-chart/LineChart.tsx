@@ -219,6 +219,8 @@ export interface LineChartProps extends AbstractChartProps {
   segments?: number;
 
   animationDuration?: number;
+
+  marginXAxes?: number;
 }
 
 type LineChartState = {
@@ -949,7 +951,7 @@ class LineChart extends AbstractChart<LineChartProps, LineChartState> {
 
     const config = {
       width,
-      height,
+      height: height - (this.props.marginXAxes || 0),
       verticalLabelRotation,
       horizontalLabelRotation,
     };
