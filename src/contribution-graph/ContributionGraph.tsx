@@ -267,7 +267,9 @@ class ContributionGraph extends AbstractChart<
         weekIndex * (this.getSquareSizeWithGutter() + 1) +
           paddingLeft -
           this.props.horizontalOffset,
-        this.getMonthLabelSize() - MONTH_LABEL_GUTTER_SIZE,
+        this.getMonthLabelSize() -
+          MONTH_LABEL_GUTTER_SIZE +
+          (this.props.verticalOffset || 0),
       ];
     }
     const verticalOffset = -2;

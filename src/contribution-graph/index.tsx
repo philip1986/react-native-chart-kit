@@ -17,6 +17,7 @@ export interface ContributionGraphProps extends AbstractChartProps {
   squareSize?: number;
   horizontal?: boolean;
   horizontalOffset?: number;
+  verticalOffset?: number;
   showMonthLabels?: boolean;
   monthBreakOffset: number;
   showDayLabels?: boolean;
