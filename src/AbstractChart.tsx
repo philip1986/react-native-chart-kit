@@ -226,7 +226,11 @@ class AbstractChart<
   };
 
   renderHorizontalLabels = (
-    config: Omit<AbstractChartConfig, "data"> & { data: number[] }
+    config: Omit<AbstractChartConfig, "data"> & {
+      data: number[];
+      minDatapoint?: number;
+      maxDatapoint?: number;
+    }
   ) => {
     const {
       count,
@@ -238,6 +242,8 @@ class AbstractChart<
       decimalPlaces = 2,
       formatYLabel = (yLabel: string) => yLabel,
       verticalLabelsHeightPercentage = DEFAULT_X_LABELS_HEIGHT_PERCENTAGE,
+      minDatapoint = Math.min(...data),
+      maxDatapoint = Math.max(...data),
     } = config;
 
     const {
@@ -246,8 +252,8 @@ class AbstractChart<
       yLabelsOffset = 12,
     } = this.props;
 
-    const minDatapoint = Math.min(...data);
-    const maxDatapoint = Math.max(...data);
+    // const minDatapoint = Math.min(...data);
+    // const maxDatapoint = Math.max(...data);
     const scaler = this.calcScalerAlt(minDatapoint, maxDatapoint);
 
     return [...new Array(count === 1 ? 1 : count + 1)].map((_, i) => {

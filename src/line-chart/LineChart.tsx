@@ -969,10 +969,18 @@ class LineChart extends AbstractChart<LineChartProps, LineChartState> {
 
     const datas = this.getDatas(this.state._datasets);
     const minDatapoint = Math.min(...datas);
-    const maxDatapoint = Math.max(...datas);
+    const _maxDatapoint = Math.max(...datas);
+    const maxDatapoint = this.props.chartConfig.yLabelGrain
+      ? Math.ceil(_maxDatapoint / this.props.chartConfig.yLabelGrain) *
+        this.props.chartConfig.yLabelGrain
+      : _maxDatapoint;
     const xMax = this.getXMaxValues(this.state._datasets);
 
-    let count = minDatapoint === maxDatapoint ? 1 : 4;
+    let count = this.props.chartConfig.yLabelGrain
+      ? this.props.chartConfig.yLabelGrain
+      : minDatapoint === maxDatapoint
+      ? 1
+      : 4;
     if (segments) {
       count = segments;
     }
@@ -1031,6 +1039,8 @@ class LineChart extends AbstractChart<LineChartProps, LineChartState> {
                 paddingRight: paddingRight as number,
                 formatYLabel,
                 decimalPlaces: chartConfig.decimalPlaces,
+                minDatapoint,
+                maxDatapoint,
               })}
 
             {withVerticalLines &&

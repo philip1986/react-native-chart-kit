@@ -173,6 +173,8 @@ export interface ChartConfig {
    * Set Info View size
    */
   scrollableInfoSize?: Size;
+
+  yLabelGrain?: number;
 }
 
 export interface Size {
