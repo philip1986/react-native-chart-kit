@@ -215,7 +215,7 @@ function LegendItem({
     Animated.timing(animationValue, {
       toValue: 1,
       duration: animationDuration * 3,
-      useNativeDriver: true,
+      useNativeDriver: false,
       easing: Easing.inOut(Easing.ease),
     }).start();
 
@@ -291,8 +291,8 @@ function Slice({
     Animated.timing(animationValue, {
       toValue: 0,
       duration: animationDuration,
-      useNativeDriver: true,
-      easing: Easing.inOut(Easing.ease),
+      useNativeDriver: false,
+      easing: Easing.out(Easing.ease),
     }).start();
 
     const subscription = animationValue.addListener(({ value }) => {

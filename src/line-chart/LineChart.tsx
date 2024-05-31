@@ -1172,7 +1172,7 @@ function _Render<P extends RenderFnProps>({
     Animated.timing(animationValue, {
       toValue: 1,
       duration: animationDuration,
-      useNativeDriver: true,
+      useNativeDriver: false,
       easing: Easing.ease,
     }).start();
 
