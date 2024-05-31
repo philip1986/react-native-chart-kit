@@ -1,4 +1,10 @@
-import React, { ReactNode, useEffect, useState } from "react";
+import React, {
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import {
   Animated,
   Easing,
@@ -25,13 +31,14 @@ import AbstractChart, {
 } from "../AbstractChart";
 import { ChartData, Dataset } from "../HelperTypes";
 import { LegendItem } from "./LegendItem";
-import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 let AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 export interface LineChartData extends ChartData {
   legend?: string[];
 }
+
+const CACHE = new Map<object, string>();
 
 export interface LineChartProps extends AbstractChartProps {
   /**
@@ -735,6 +742,10 @@ class LineChart extends AbstractChart<LineChartProps, LineChartState> {
       return "M0,0";
     }
 
+    if (CACHE.has(dataset)) {
+      return CACHE.get(dataset);
+    }
+
     const x = (i: number) =>
       Math.floor(paddingRight + (i * (width - paddingRight)) / xMax);
 
@@ -755,25 +766,25 @@ class LineChart extends AbstractChart<LineChartProps, LineChartState> {
       return Math.floor(((baseHeight - yHeight) / 4) * 3 + paddingTop);
     };
 
-    return [`M${x(0)},${y(0)}`]
-      .concat(
-        dataset.data.slice(0, -1).map((_, i) => {
-          const xi = x(i);
-          const xi1 = x(i + 1);
-          const yi = y(i);
-          const yi1 = y(i + 1);
+    let path = `M${x(0)},${y(0)}`;
+    const len = dataset.data.length - 1;
+    for (let i = 0; i < len - 1; i++) {
+      const xi = x(i);
+      const xi1 = x(i + 1);
+      const yi = y(i);
+      const yi1 = y(i + 1);
 
-          const x_mid = (xi + xi1) / 2;
-          const y_mid = (yi + yi1) / 2;
-          const cp_x1 = (x_mid + xi) / 2;
-          const cp_x2 = (x_mid + xi1) / 2;
-          return (
-            `Q ${cp_x1}, ${yi}, ${x_mid}, ${y_mid}` +
-            ` Q ${cp_x2}, ${yi1}, ${xi1}, ${yi1}`
-          );
-        })
-      )
-      .join(" ");
+      const x_mid = (xi + xi1) / 2;
+      const y_mid = (yi + yi1) / 2;
+      const cp_x1 = (x_mid + xi) / 2;
+      const cp_x2 = (x_mid + xi1) / 2;
+      path +=
+        ` Q ${cp_x1}, ${yi}, ${x_mid}, ${y_mid}` +
+        ` Q ${cp_x2}, ${yi1}, ${xi1}, ${yi1}`;
+    }
+
+    CACHE.set(dataset, path);
+    return path;
   };
 
   renderBezierLine = ({
@@ -1081,7 +1092,7 @@ class LineChart extends AbstractChart<LineChartProps, LineChartState> {
 
             {withDots && (
               <_Dots
-                renderFn={this.renderDots}
+                renderFn={renderDots}
                 props={{
                   ...config,
                   data: this.state._datasets,
@@ -1091,6 +1102,17 @@ class LineChart extends AbstractChart<LineChartProps, LineChartState> {
                   minDatapoint,
                   maxDatapoint,
                   xMax,
+                  getDotColor: this.props.getDotColor,
+                  hidePointsAtIndex: this.props.hidePointsAtIndex,
+                  renderDotContent: this.props.renderDotContent,
+                  defaultColor: this.props.chartConfig.color(0.9),
+                  calcHeightAlt: this.calcHeightAlt,
+                  propsForDots: this.props.chartConfig.propsForDots,
+                  baseHeight: this.calcBaseHeightAlt(
+                    minDatapoint,
+                    maxDatapoint,
+                    config.height
+                  ),
                 }}
                 animationDuration={this.props.animationDuration}
               />
@@ -1130,7 +1152,7 @@ class LineChart extends AbstractChart<LineChartProps, LineChartState> {
                   },
                 },
               ],
-              { useNativeDriver: true }
+              { useNativeDriver: false }
             )}
             horizontal
             bounces={false}
@@ -1245,6 +1267,18 @@ type DotsFnProps = Pick<
 > &
   RenderFnBaseProps & {
     onDataPointClick: LineChartProps["onDataPointClick"];
+    getDotColor: LineChartProps["getDotColor"];
+    hidePointsAtIndex: LineChartProps["hidePointsAtIndex"];
+    renderDotContent: LineChartProps["renderDotContent"];
+    baseHeight: number;
+    defaultColor: string;
+    propsForDots: Partial<CircleProps>;
+    calcHeightAlt: (
+      val: number,
+      height: number,
+      min: number,
+      max: number
+    ) => number;
   };
 
 interface _DotsProps {
@@ -1261,4 +1295,94 @@ function _Dots({ renderFn, props, animationDuration }: _DotsProps) {
       animationDuration={animationDuration}
     />
   );
+}
+
+function renderDots({
+  minDatapoint,
+  maxDatapoint,
+  height,
+  getDotColor,
+  hidePointsAtIndex,
+  renderDotContent,
+  data,
+  paddingRight,
+  paddingTop,
+  width,
+  xMax,
+  onDataPointClick,
+  baseHeight,
+  calcHeightAlt,
+  defaultColor,
+  propsForDots,
+}: DotsFnProps) {
+  const _data = useMemo(() => {
+    return data
+      .map((dataset) => {
+        if (dataset.withDots == false) return;
+
+        const _getDotColor =
+          typeof getDotColor === "function"
+            ? getDotColor
+            : dataset.color || (() => defaultColor);
+
+        return dataset.data.map((x, i) => {
+          const cx = paddingRight + (i * (width - paddingRight)) / xMax;
+
+          const cy =
+            ((baseHeight -
+              calcHeightAlt(x, height, minDatapoint, maxDatapoint)) /
+              4) *
+              3 +
+            paddingTop;
+
+          return {
+            cx,
+            cy,
+            fill: _getDotColor(x, i),
+            index: i,
+            value: x,
+            dataset,
+          };
+        });
+      })
+      .flat();
+  }, [data]);
+
+  const onPress = useCallback((i: number) => {
+    onDataPointClick({
+      index: _data[i].index,
+      value: _data[i].value,
+      dataset: _data[i].dataset,
+      x: _data[i].cx,
+      y: _data[i].cy,
+      getColor: (opacity) => this.getColor(_data[i].dataset, opacity),
+    });
+  }, []);
+
+  return _data.map((d, index) => {
+    return [
+      <Circle
+        key={index}
+        cx={d.cx}
+        cy={d.cy}
+        r={4}
+        fill={d.fill}
+        {...propsForDots}
+      />,
+      <Circle
+        key={Math.random()}
+        cx={d.cx}
+        cy={d.cy}
+        r="14"
+        fillOpacity={0}
+        onPress={
+          onDataPointClick
+            ? () => {
+                onPress(index);
+              }
+            : null
+        }
+      />,
+    ];
+  });
 }
