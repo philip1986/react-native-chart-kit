@@ -976,8 +976,8 @@ class LineChart extends AbstractChart<LineChartProps, LineChartState> {
       : _maxDatapoint;
     const xMax = this.getXMaxValues(this.state._datasets);
 
-    let count = this.props.chartConfig.yLabelGrain
-      ? this.props.chartConfig.yLabelGrain
+    let count = this.props.chartConfig.yLableCount
+      ? this.props.chartConfig.yLableCount
       : minDatapoint === maxDatapoint
       ? 1
       : 4;

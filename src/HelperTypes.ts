@@ -175,6 +175,7 @@ export interface ChartConfig {
   scrollableInfoSize?: Size;
 
   yLabelGrain?: number;
+  yLableCount?: number;
 }
 
 export interface Size {
