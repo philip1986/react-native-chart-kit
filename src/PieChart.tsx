@@ -215,7 +215,7 @@ function LegendItem({
     Animated.timing(animationValue, {
       toValue: 1,
       duration: animationDuration * 3,
-      useNativeDriver: false,
+      useNativeDriver: true,
       easing: Easing.inOut(Easing.ease),
     }).start();
 
@@ -291,7 +291,7 @@ function Slice({
     Animated.timing(animationValue, {
       toValue: 0,
       duration: animationDuration,
-      useNativeDriver: false,
+      useNativeDriver: true,
       easing: Easing.inOut(Easing.ease),
     }).start();
 

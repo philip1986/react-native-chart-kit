@@ -1130,7 +1130,7 @@ class LineChart extends AbstractChart<LineChartProps, LineChartState> {
                   },
                 },
               ],
-              { useNativeDriver: false }
+              { useNativeDriver: true }
             )}
             horizontal
             bounces={false}
@@ -1172,7 +1172,7 @@ function _Render<P extends RenderFnProps>({
     Animated.timing(animationValue, {
       toValue: 1,
       duration: animationDuration,
-      useNativeDriver: false,
+      useNativeDriver: true,
       easing: Easing.ease,
     }).start();
 
