@@ -1370,7 +1370,7 @@ function renderDots({
         {...propsForDots}
       />,
       <Circle
-        key={Math.random()}
+        key={`touch-${index}`}
         cx={d.cx}
         cy={d.cy}
         r="14"
