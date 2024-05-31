@@ -78,7 +78,7 @@ class ContributionGraph extends AbstractChart<
   }
 
   getStartDate() {
-    return shiftDate(this.getEndDate(), -this.props.numDays + 1); // +1 because endDate is inclusive
+    return shiftDate(this.getEndDate(), -this.props.numDays);
   }
 
   getEndDate() {
