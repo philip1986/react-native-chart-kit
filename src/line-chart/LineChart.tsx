@@ -767,7 +767,7 @@ class LineChart extends AbstractChart<LineChartProps, LineChartState> {
     };
 
     let path = `M${x(0)},${y(0)}`;
-    const len = dataset.data.length - 1;
+    const len = dataset.data.length;
     for (let i = 0; i < len - 1; i++) {
       const xi = x(i);
       const xi1 = x(i + 1);
