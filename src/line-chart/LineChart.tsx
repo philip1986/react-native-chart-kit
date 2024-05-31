@@ -1312,8 +1312,6 @@ function renderDots({
   maxDatapoint,
   height,
   getDotColor,
-  hidePointsAtIndex,
-  renderDotContent,
   data,
   paddingRight,
   paddingTop,

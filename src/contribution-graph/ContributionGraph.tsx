@@ -17,6 +17,12 @@ import {
   MILLISECONDS_IN_ONE_DAY,
   MONTH_LABELS,
 } from "./constants";
+import Animated, {
+  FadeIn,
+  useAnimatedProps,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
 
 const SQUARE_SIZE = 20;
 const MONTH_LABEL_GUTTER_SIZE = 8;
@@ -306,8 +312,9 @@ class ContributionGraph extends AbstractChart<
     const { squareSize = SQUARE_SIZE } = this.props;
 
     return (
-      <Rect
+      <AnimatedSquare
         key={index}
+        animationDuration={this.props.animationDuration || 0}
         width={squareSize}
         height={squareSize}
         x={x + paddingLeft + offsetX}
@@ -579,4 +586,22 @@ function getWeekOfMonth(date: Date) {
   const firstDayOfWeek = firstDayOfMonth.getDay() || 7;
   const offsetDate = date.getDate() + firstDayOfWeek - 1;
   return Math.ceil(offsetDate / 7);
+}
+
+const AnimatedRect = Animated.createAnimatedComponent(Rect);
+
+type AnimatedSquareProps = {
+  animationDuration: number;
+} & RectProps;
+
+function AnimatedSquare(props: AnimatedSquareProps) {
+  const animationValue = useSharedValue(0);
+
+  useEffect(() => {
+    animationValue.value = withTiming(1, {
+      duration: Math.round(Math.random() * props.animationDuration),
+    });
+  }, []);
+
+  return <AnimatedRect opacity={animationValue} {...props} />;
 }

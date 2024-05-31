@@ -30,6 +30,7 @@ export interface ContributionGraphProps extends AbstractChartProps {
   style?: Partial<ViewStyle>;
   titleForValue?: (value: ContributionChartValue) => string;
   tooltipDataAttrs: TooltipDataAttrs;
+  animationDuration?: number;
 }
 
 export type ContributionGraphState = {
