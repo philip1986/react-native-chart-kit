@@ -18,6 +18,7 @@ export interface PieChartProps extends AbstractChartProps {
   style?: Partial<ViewStyle>;
   avoidFalseZero?: boolean;
   animationDuration?: number;
+  legendHorizontalOffset?: number;
 }
 
 type PieChartState = {};
@@ -75,6 +76,7 @@ class PieChart extends AbstractChart<PieChartProps, PieChartState> {
               hasLegend={hasLegend}
               avoidFalseZero={avoidFalseZero}
               animationDuration={this.props.animationDuration}
+              legendHorizontalOffset={this.props.legendHorizontalOffset || 0}
             />
           </G>
         </Svg>
@@ -95,6 +97,7 @@ interface SlicesProps {
   hasLegend: boolean;
   avoidFalseZero: boolean;
   animationDuration?: number;
+  legendHorizontalOffset?: number;
 }
 
 function Slices({
@@ -107,6 +110,7 @@ function Slices({
   hasLegend,
   avoidFalseZero,
   animationDuration,
+  legendHorizontalOffset,
 }: SlicesProps) {
   const total = data.reduce((sum, item) => {
     return sum + item[accessor];
@@ -165,6 +169,7 @@ function Slices({
             legendFontSize={c.item.legendFontSize}
             length={chart.curves.length}
             animationDuration={animationDuration}
+            horizontalOffset={legendHorizontalOffset}
           />
         )}
       </G>
@@ -184,6 +189,7 @@ interface LegendProps {
   length: number;
   index: number;
   animationDuration?: number;
+  horizontalOffset: number;
 }
 
 function LegendItem({
@@ -198,6 +204,7 @@ function LegendItem({
   length,
   index,
   animationDuration,
+  horizontalOffset,
 }: LegendProps) {
   const [opacity, setOpacity] = useState(animationDuration ? 0 : 1);
 
@@ -230,7 +237,7 @@ function LegendItem({
         opacity={opacity}
         rx={8}
         ry={8}
-        x={width / 2.5 - 24}
+        x={width / 2.5 - 24 + horizontalOffset}
         y={-(height / 2.5) + ((height * 0.8) / length) * index + 12}
       />
 
@@ -239,7 +246,7 @@ function LegendItem({
         fontSize={legendFontSize}
         fontFamily={legendFontFamily}
         opacity={opacity}
-        x={width / 2.5}
+        x={width / 2.5 + horizontalOffset}
         y={-(height / 2.5) + ((height * 0.8) / length) * index + 12 * 2}
       >
         {`${value} ${text}`}
