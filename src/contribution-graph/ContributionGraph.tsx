@@ -262,7 +262,11 @@ class ContributionGraph extends AbstractChart<
 
   getSquareCoordinates(dayIndex: number) {
     if (this.props.horizontal) {
-      return [0, dayIndex * this.getSquareSizeWithGutter()];
+      return [
+        0,
+        dayIndex * this.getSquareSizeWithGutter() -
+          (this.props.verticalOffset || 0),
+      ];
     }
     return [dayIndex * this.getSquareSizeWithGutter(), 0];
   }
@@ -273,9 +277,7 @@ class ContributionGraph extends AbstractChart<
         weekIndex * (this.getSquareSizeWithGutter() + 1) +
           paddingLeft -
           this.props.horizontalOffset,
-        this.getMonthLabelSize() -
-          MONTH_LABEL_GUTTER_SIZE +
-          (this.props.verticalOffset || 0),
+        this.getMonthLabelSize() - MONTH_LABEL_GUTTER_SIZE,
       ];
     }
     const verticalOffset = -2;
@@ -289,7 +291,9 @@ class ContributionGraph extends AbstractChart<
     if (this.props.horizontal) {
       return [
         LABEL_PADDING_LEFT,
-        60 + dayIndex * (this.props.squareSize || SQUARE_SIZE),
+        60 +
+          dayIndex * (this.props.squareSize || SQUARE_SIZE) -
+          (this.props.verticalOffset || 0),
       ];
     }
     const verticalOffset = -2;
@@ -417,7 +421,7 @@ class ContributionGraph extends AbstractChart<
         <Text
           key={weekIndex}
           x={x + offset}
-          y={y + 8}
+          y={y}
           {...this.getPropsForLabels()}
         >
           {this.props.getMonthLabel
