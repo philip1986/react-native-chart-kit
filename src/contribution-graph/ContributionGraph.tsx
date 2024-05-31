@@ -323,12 +323,12 @@ class ContributionGraph extends AbstractChart<
         height={squareSize}
         x={x + paddingLeft + offsetX}
         y={y}
-        title={this.getTitleForIndex(index)}
-        fill={this.getClassNameForIndex(index)}
+        title={this.getTitleForIndex(index + 1)}
+        fill={this.getClassNameForIndex(index + 1)}
         onPress={() => {
-          this.handleDayPress(index);
+          this.handleDayPress(index + 1);
         }}
-        {...this.getTooltipDataAttrsForIndex(index)}
+        {...this.getTooltipDataAttrsForIndex(index + 1)}
       />
     );
   }
@@ -337,8 +337,6 @@ class ContributionGraph extends AbstractChart<
     if (!this.props.onDayPress) {
       return;
     }
-
-    index = index - this.getNumEmptyDaysAtStart() + 1;
 
     this.props.onDayPress(
       this.state.valueCache[index] && this.state.valueCache[index].value
