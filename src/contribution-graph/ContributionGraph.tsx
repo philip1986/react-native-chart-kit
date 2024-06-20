@@ -1,4 +1,4 @@
-import _ from "lodash";
+import range from "lodash/range";
 import React, { ReactNode, useEffect, useRef } from "react";
 import { ScrollView, View } from "react-native";
 import { G, Rect, RectProps, Svg, Text } from "react-native-svg";
@@ -355,7 +355,7 @@ class ContributionGraph extends AbstractChart<
     const monthBreakOffset = this.getMonthBreakOffset();
     return (
       <G key={weekIndex} x={x + offset} y={y}>
-        {_.range(DAYS_IN_WEEK).map((dayIndex) => {
+        {range(DAYS_IN_WEEK).map((dayIndex) => {
           const curDay = addDays(weekStart, dayIndex);
 
           const dayOffset =
@@ -374,7 +374,7 @@ class ContributionGraph extends AbstractChart<
   renderAllWeeks(offset: number = 0) {
     const monthBreakOffset = this.getMonthBreakOffset();
     let _offset = offset;
-    return _.range(this.getWeekCount()).map((weekIndex) => {
+    return range(this.getWeekCount()).map((weekIndex) => {
       const d = addWeeks(this.getStartDate(), weekIndex);
       const startOfWeek = getStartOfWeek(d);
 
@@ -397,7 +397,7 @@ class ContributionGraph extends AbstractChart<
       return null;
     }
 
-    const weekRange = _.range(this.getWeekCount());
+    const weekRange = range(this.getWeekCount());
 
     let curMonth: number;
     return weekRange.map((weekIndex) => {
@@ -435,7 +435,7 @@ class ContributionGraph extends AbstractChart<
       return null;
     }
 
-    const dayRange = _.range(7);
+    const dayRange = range(7);
 
     return dayRange.map((dayIndex) => {
       const [x, y] = this.getDayLabelCoordinates(dayIndex);
