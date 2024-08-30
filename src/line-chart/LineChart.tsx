@@ -890,7 +890,6 @@ class LineChart extends AbstractChart<LineChartProps, LineChartState> {
       <View
         style={{
           flexWrap: "wrap",
-          columnGap: 8,
           width: "100%",
           height: this.props.chartConfig.legendHeight || 40,
           marginLeft: baseLegendItemX - CIRCLE_WIDTH,

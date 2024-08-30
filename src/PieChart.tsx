@@ -1,7 +1,7 @@
 import Pie from "paths-js/pie";
 import React, { useEffect, useState } from "react";
 import { Animated, Easing, View, ViewStyle } from "react-native";
-import { G, Path, Rect, Svg, Text } from "react-native-svg";
+import { G, Path, Rect, Svg } from "react-native-svg";
 
 import AbstractChart, { AbstractChartProps } from "./AbstractChart";
 
@@ -158,18 +158,10 @@ function Slices({
         />
         {hasLegend && (
           <LegendItem
-            width={width}
-            height={height}
             index={i}
             text={c.item.name}
             color={c.item.color}
-            value={value}
-            legendFontColor={c.item.legendFontColor}
-            legendFontFamily={c.item.legendFontFamily}
-            legendFontSize={c.item.legendFontSize}
-            length={chart.curves.length}
             animationDuration={animationDuration}
-            horizontalOffset={legendHorizontalOffset}
           />
         )}
       </G>
@@ -178,34 +170,13 @@ function Slices({
 }
 
 interface LegendProps {
-  width: number;
-  height: number;
   text: JSX.Element;
-  value: string;
   color: string;
-  legendFontColor: string;
-  legendFontSize: number;
-  legendFontFamily: string;
-  length: number;
   index: number;
   animationDuration?: number;
-  horizontalOffset: number;
 }
 
-function LegendItem({
-  width,
-  height,
-  text,
-  color,
-  value,
-  legendFontColor,
-  legendFontSize,
-  legendFontFamily,
-  length,
-  index,
-  animationDuration,
-  horizontalOffset,
-}: LegendProps) {
+function LegendItem({ text, color, index, animationDuration }: LegendProps) {
   const [opacity, setOpacity] = useState(animationDuration ? 0 : 1);
 
   useEffect(() => {
@@ -232,10 +203,10 @@ function LegendItem({
     <View
       style={{
         position: "absolute",
-        top: ((height * 0.8) / length) * index + 12,
+        top: 100 + index * 30,
         left: "60%",
+        flex: 1,
         flexDirection: "row",
-        columnGap: 8,
       }}
     >
       <View
@@ -247,17 +218,6 @@ function LegendItem({
           opacity,
         }}
       />
-      {/* <Rect
-        width="16px"
-        height="16px"
-        fill={color}
-        opacity={opacity}
-        rx={8}
-        ry={8}
-        x={width / 2.5 - 24 + horizontalOffset}
-        y={-(height / 2.5) + ((height * 0.8) / length) * index + 12}
-      /> */}
-
       {text}
     </View>
   );
