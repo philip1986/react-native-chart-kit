@@ -131,7 +131,7 @@ export default class App extends React.Component {
                 backgroundColor: chartConfig.backgroundColor,
               }}
             >
-              <Text style={labelStyle}>Bezier Line Chart</Text>
+              {/* <Text style={labelStyle}>Bezier Line Chart</Text>
               <LineChart
                 bezier
                 data={data}
@@ -199,7 +199,7 @@ export default class App extends React.Component {
                 height={220}
                 chartConfig={chartConfig}
                 percentile
-              />
+              /> */}
               <Text style={labelStyle}>Pie Chart</Text>
               <PieChart
                 data={pieChartData}
@@ -212,7 +212,7 @@ export default class App extends React.Component {
                 paddingLeft="15"
               />
               <Text style={labelStyle}>Line Chart</Text>
-              <LineChart
+              {/* <LineChart
                 data={data}
                 width={width}
                 height={height}
@@ -321,7 +321,7 @@ export default class App extends React.Component {
                 style={{
                   marginVertical: 8,
                 }}
-              />
+              /> */}
             </ScrollView>
           );
         })}

@@ -180,7 +180,7 @@ function Slices({
 interface LegendProps {
   width: number;
   height: number;
-  text: string;
+  text: JSX.Element;
   value: string;
   color: string;
   legendFontColor: string;
@@ -229,8 +229,25 @@ function LegendItem({
   }, []);
 
   return (
-    <>
-      <Rect
+    <View
+      style={{
+        position: "absolute",
+        top: ((height * 0.8) / length) * index + 12,
+        left: "60%",
+        flexDirection: "row",
+        columnGap: 8,
+      }}
+    >
+      <View
+        style={{
+          width: 16,
+          height: 16,
+          borderRadius: 8,
+          backgroundColor: color,
+          opacity,
+        }}
+      />
+      {/* <Rect
         width="16px"
         height="16px"
         fill={color}
@@ -239,19 +256,10 @@ function LegendItem({
         ry={8}
         x={width / 2.5 - 24 + horizontalOffset}
         y={-(height / 2.5) + ((height * 0.8) / length) * index + 12}
-      />
+      /> */}
 
-      <Text
-        fill={legendFontColor}
-        fontSize={legendFontSize}
-        fontFamily={legendFontFamily}
-        opacity={opacity}
-        x={width / 2.5 + horizontalOffset}
-        y={-(height / 2.5) + ((height * 0.8) / length) * index + 12 * 2}
-      >
-        {`${value} ${text}`}
-      </Text>
-    </>
+      {text}
+    </View>
   );
 }
 
