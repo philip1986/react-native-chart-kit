@@ -34,6 +34,7 @@ export interface AbstractChartConfig extends ChartConfig {
   formatTopBarValue?: (topBarValue: number) => string | number;
   legendFontSize?: number;
   xLegendOffset?: number;
+  legendHeight?: number;
 }
 
 export type AbstractChartState = {};

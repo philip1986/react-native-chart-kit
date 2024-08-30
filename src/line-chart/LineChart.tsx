@@ -30,12 +30,12 @@ import AbstractChart, {
   AbstractChartProps,
 } from "../AbstractChart";
 import { ChartData, Dataset } from "../HelperTypes";
-import { LegendItem } from "./LegendItem";
+import { CIRCLE_WIDTH, LegendItem } from "./LegendItem";
 
 let AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 export interface LineChartData extends ChartData {
-  legend?: string[];
+  legend?: JSX.Element[];
 }
 
 const CACHE = new Map<object, string>();
@@ -880,47 +880,51 @@ class LineChart extends AbstractChart<LineChartProps, LineChartState> {
       );
     });
 
-  renderLegend = (legendOffset) => {
+  renderLegend = () => {
     const { legend, datasets } = this.props.data;
     const baseLegendItemX = this.props.chartConfig.xLegendOffset || 80;
 
-    return legend.map((legendItem, i) => (
-      <G key={Math.random()}>
-        <LegendItem
-          enabled={this.state.enabeldDatasets.has(i)}
-          allowDisabledLegendItems={
-            this.state.enabeldDatasets.size > 1 || legend.length === 2
-          }
-          index={i}
-          onToggel={(isEnabled) => {
-            isEnabled
-              ? this.state.enabeldDatasets.add(i)
-              : this.state.enabeldDatasets.delete(i);
+    if (legend.length === 0) return null;
 
-            if (this.state.enabeldDatasets.size === 0) {
-              this.state.enabeldDatasets.add(
-                legend.findIndex((_, ii) => ii !== i)
-              );
+    return (
+      <View
+        style={{
+          flexWrap: "wrap",
+          columnGap: 15,
+          width: "100%",
+          height: this.props.chartConfig.legendHeight || 40,
+          marginLeft: baseLegendItemX - CIRCLE_WIDTH,
+        }}
+      >
+        {legend.map((legendItem, i) => (
+          <LegendItem
+            key={i}
+            enabled={this.state.enabeldDatasets.has(i)}
+            allowDisabledLegendItems={
+              this.state.enabeldDatasets.size > 1 || legend.length === 2
             }
+            onToggel={(isEnabled) => {
+              isEnabled
+                ? this.state.enabeldDatasets.add(i)
+                : this.state.enabeldDatasets.delete(i);
 
-            this.state._datasets = this.props.data.datasets.filter((_, i) =>
-              this.state.enabeldDatasets.has(i)
-            );
-            this.forceUpdate();
-          }}
-          iconColor={this.getColor(datasets[i], 0.9)}
-          baseLegendItemX={baseLegendItemX}
-          legendText={legendItem}
-          labelProps={{
-            ...this.getPropsForLabels(),
-            fontSize:
-              this.props.chartConfig.legendFontSize ||
-              this.getPropsForLabels().fontSize,
-          }}
-          legendOffset={legendOffset}
-        />
-      </G>
-    ));
+              if (this.state.enabeldDatasets.size === 0) {
+                this.state.enabeldDatasets.add(
+                  legend.findIndex((_, ii) => ii !== i)
+                );
+              }
+
+              this.state._datasets = this.props.data.datasets.filter((_, i) =>
+                this.state.enabeldDatasets.has(i)
+              );
+              this.forceUpdate();
+            }}
+            iconColor={this.getColor(datasets[i], 0.9)}
+            legendText={legendItem}
+          />
+        ))}
+      </View>
+    );
   };
 
   render() {
@@ -985,29 +989,38 @@ class LineChart extends AbstractChart<LineChartProps, LineChartState> {
       count = segments;
     }
 
-    const legendOffset = this.props.data.legend
-      ? height * 0.15 +
-        (this.props.data.legend.length *
-          this.props.chartConfig.legendFontSize) /
-          2
-      : 0;
-
     return (
       <View style={style}>
+        {this.props.data.legend && (
+          <View
+            style={{
+              zIndex: 1000,
+              marginTop: 10,
+              position: "absolute",
+            }}
+          >
+            {this.renderLegend()}
+          </View>
+        )}
         <Svg
-          height={height + (paddingBottom as number) + legendOffset}
+          height={
+            height +
+            (paddingBottom as number) +
+            (this.props.chartConfig.legendHeight + 10 || 0)
+          }
           width={width - (margin as number) * 2 - (marginRight as number)}
         >
           <Rect
+            pointerEvents="none"
             width="100%"
-            height={height + legendOffset}
+            height={height + (this.props.chartConfig.legendHeight + 10 || 0)}
             rx={borderRadius as number}
             ry={borderRadius as number}
             fill="url(#backgroundGradient)"
             fillOpacity={transparent ? 0 : 1}
           />
-          {this.props.data.legend && this.renderLegend(legendOffset)}
-          <G x="0" y={legendOffset}>
+
+          <G x="0" y={this.props.chartConfig.legendHeight + 10 || 20}>
             {this.renderDefs({
               ...config,
               ...chartConfig,

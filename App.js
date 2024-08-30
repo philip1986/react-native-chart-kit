@@ -9,7 +9,7 @@ import {
   data,
   pieChartData,
   progressChartData,
-  stackedBarGraphData
+  stackedBarGraphData,
 } from "./data";
 import {
   BarChart,
@@ -17,7 +17,7 @@ import {
   LineChart,
   PieChart,
   ProgressChart,
-  StackedBarChart
+  StackedBarChart,
 } from "./dist/";
 
 // in Expo - swipe left to see the following styling, or create your own
@@ -28,8 +28,9 @@ const chartConfigs = [
     backgroundGradientTo: "#08130D",
     color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
     style: {
-      borderRadius: 16
-    }
+      borderRadius: 16,
+    },
+    legendHeight: 40,
   },
   {
     backgroundColor: "#022173",
@@ -37,23 +38,23 @@ const chartConfigs = [
     backgroundGradientTo: "#1b3fa0",
     color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
     style: {
-      borderRadius: 16
+      borderRadius: 16,
     },
     propsForBackgroundLines: {
-      strokeDasharray: "" // solid background lines with no dashes
-    }
+      strokeDasharray: "", // solid background lines with no dashes
+    },
   },
   {
     backgroundColor: "#ffffff",
     backgroundGradientFrom: "#ffffff",
     backgroundGradientTo: "#ffffff",
-    color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`
+    color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
   },
   {
     backgroundColor: "#ffffff",
     backgroundGradientFrom: "#ffffff",
     backgroundGradientTo: "#ffffff",
-    color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`
+    color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
   },
   {
     backgroundColor: "#26872a",
@@ -61,20 +62,20 @@ const chartConfigs = [
     backgroundGradientTo: "#66bb6a",
     color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
     style: {
-      borderRadius: 16
-    }
+      borderRadius: 16,
+    },
   },
   {
     backgroundColor: "#000000",
     backgroundGradientFrom: "#000000",
     backgroundGradientTo: "#000000",
-    color: (opacity = 1) => `rgba(${255}, ${255}, ${255}, ${opacity})`
+    color: (opacity = 1) => `rgba(${255}, ${255}, ${255}, ${opacity})`,
   },
   {
     backgroundColor: "#0091EA",
     backgroundGradientFrom: "#0091EA",
     backgroundGradientTo: "#0091EA",
-    color: (opacity = 1) => `rgba(${255}, ${255}, ${255}, ${opacity})`
+    color: (opacity = 1) => `rgba(${255}, ${255}, ${255}, ${opacity})`,
   },
   {
     backgroundColor: "#e26a00",
@@ -82,8 +83,8 @@ const chartConfigs = [
     backgroundGradientTo: "#ffa726",
     color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
     style: {
-      borderRadius: 16
-    }
+      borderRadius: 16,
+    },
   },
   {
     backgroundColor: "#b90602",
@@ -91,15 +92,15 @@ const chartConfigs = [
     backgroundGradientTo: "#ef5350",
     color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
     style: {
-      borderRadius: 16
-    }
+      borderRadius: 16,
+    },
   },
   {
     backgroundColor: "#ff3e03",
     backgroundGradientFrom: "#ff3e03",
     backgroundGradientTo: "#ff3e03",
-    color: (opacity = 1) => `rgba(${0}, ${0}, ${0}, ${opacity})`
-  }
+    color: (opacity = 1) => `rgba(${0}, ${0}, ${0}, ${opacity})`,
+  },
 ];
 
 export default class App extends React.Component {
@@ -112,22 +113,22 @@ export default class App extends React.Component {
     const height = 256;
     return (
       <View>
-        {chartConfigs.map(chartConfig => {
+        {chartConfigs.map((chartConfig) => {
           const labelStyle = {
             color: chartConfig.color(),
             marginVertical: 10,
             textAlign: "center",
-            fontSize: 16
+            fontSize: 16,
           };
           const graphStyle = {
             marginVertical: 8,
-            ...chartConfig.style
+            ...chartConfig.style,
           };
           return (
             <ScrollView
               key={Math.random()}
               style={{
-                backgroundColor: chartConfig.backgroundColor
+                backgroundColor: chartConfig.backgroundColor,
               }}
             >
               <Text style={labelStyle}>Bezier Line Chart</Text>
@@ -145,10 +146,10 @@ export default class App extends React.Component {
                   showMessage({
                     message: `${value}`,
                     description: "You selected this value",
-                    backgroundColor: getColor(0.9)
+                    backgroundColor: getColor(0.9),
                   })
                 }
-                formatXLabel={label => label.toUpperCase()}
+                formatXLabel={(label) => label.toUpperCase()}
               />
               <FlashMessage duration={1000} />
               <Text style={labelStyle}>Progress Chart</Text>
@@ -186,7 +187,7 @@ export default class App extends React.Component {
                 width={width}
                 height={220}
                 chartConfig={chartConfig}
-                formatYLabel={input => {
+                formatYLabel={(input) => {
                   return +input * 2;
                 }}
               />
@@ -252,7 +253,7 @@ export default class App extends React.Component {
                 segments={5}
                 chartConfig={{
                   ...chartConfig,
-                  useShadowColorFromDataset: true
+                  useShadowColorFromDataset: true,
                 }}
                 style={graphStyle}
                 hidePointsAtIndex={[0, data.datasets[0].data.length - 1]}
@@ -267,7 +268,7 @@ export default class App extends React.Component {
                     "March",
                     "April",
                     "May",
-                    "June"
+                    "June",
                   ],
                   datasets: [
                     {
@@ -278,10 +279,10 @@ export default class App extends React.Component {
                         Math.random() * 100,
                         Math.random() * 100,
                         Math.random() * 100,
-                        Math.random() * 100
-                      ]
-                    }
-                  ]
+                        Math.random() * 100,
+                      ],
+                    },
+                  ],
                 }}
                 width={Dimensions.get("window").width} // from react-native
                 height={220}
@@ -306,19 +307,19 @@ export default class App extends React.Component {
                     justifyContent: "center",
                     alignContent: "center",
                     backgroundColor: "#121212",
-                    borderRadius: 2
+                    borderRadius: 2,
                   },
                   scrollableInfoTextStyle: {
                     color: "#C4C4C4",
                     marginHorizontal: 4,
                     flex: 1,
-                    textAlign: "center"
+                    textAlign: "center",
                   },
                   scrollableInfoSize: { width: 65, height: 30 },
-                  scrollableInfoOffset: 15
+                  scrollableInfoOffset: 15,
                 }}
                 style={{
-                  marginVertical: 8
+                  marginVertical: 8,
                 }}
               />
             </ScrollView>
