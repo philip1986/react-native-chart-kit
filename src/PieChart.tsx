@@ -161,6 +161,8 @@ function Slices({
             index={i}
             text={c.item.name}
             color={c.item.color}
+            widgetHeight={height}
+            legendItemCount={legendItemCount}
             animationDuration={animationDuration}
           />
         )}
@@ -173,11 +175,21 @@ interface LegendProps {
   text: JSX.Element;
   color: string;
   index: number;
+  widgetHeight: number;
+  legendItemCount: number;
   animationDuration?: number;
 }
 
-function LegendItem({ text, color, index, animationDuration }: LegendProps) {
+function LegendItem({
+  text,
+  color,
+  index,
+  widgetHeight,
+  legendItemCount,
+  animationDuration,
+}: LegendProps) {
   const [opacity, setOpacity] = useState(animationDuration ? 0 : 1);
+  const ROW_HEIGHT = 30;
 
   useEffect(() => {
     if (!animationDuration) return;
@@ -199,11 +211,13 @@ function LegendItem({ text, color, index, animationDuration }: LegendProps) {
     };
   }, []);
 
+  const totalHeight = legendItemCount * ROW_HEIGHT;
+
   return (
     <View
       style={{
         position: "absolute",
-        top: 100 + index * 30,
+        top: (widgetHeight - totalHeight) * 0.5 + index * ROW_HEIGHT,
         left: "60%",
         flex: 1,
         flexDirection: "row",
