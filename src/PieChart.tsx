@@ -126,6 +126,8 @@ function Slices({
     },
   });
 
+  const legendItemCount = chart.curves.length;
+
   return chart.curves.map((c, i) => {
     let value: string;
 
