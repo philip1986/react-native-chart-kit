@@ -13,7 +13,6 @@
     "target": "es5",
     "module": "esnext",
     "moduleResolution": "node",
-
     "rootDir": "./src",
     "outDir": "./dist",
     "skipLibCheck": true,
@@ -24,5 +23,7 @@
     "esModuleInterop": true,
     "noErrorTruncation": true,
     "jsx": "react-native"
-  }
+  },
+  "extends": "expo/tsconfig.base",
+  "include": ["src/**/*"]
 }
